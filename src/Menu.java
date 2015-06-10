@@ -12,7 +12,7 @@ public class Menu {
 		case "Main":
 			this.options = new String[] {"Create a new Recipe", "List Recipe Titles", "Search for a Recipe by Title", "Quit"};
 			break;
-		case "E4dit":
+		case "Edit":
 			this.options = new String[] {"Change Title", "Edit Ingredients", "Edit Instructions", "Delete", "Return to Main Menu"};
 			break;
 		}
