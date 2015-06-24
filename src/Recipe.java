@@ -1,3 +1,6 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 
 public class Recipe {
 	//TODO:save title, ingredients and instructions as recipe object.  
@@ -36,6 +39,10 @@ public class Recipe {
 	public void setInstructions(String instructions) {
 		this.instructions = instructions;
 	}	
-	
-
+	public void getTitleFromUser() {
+		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+		System.out.println("====== Build a new Recipe Here =======");
+		System.out.println("Title of Recipe:");
+		this.setTitle(bufferRead.readLine());
+	}
 }
