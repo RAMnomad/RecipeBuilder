@@ -13,7 +13,7 @@ public class ReadFromFile
 	@SuppressWarnings("unchecked")//not sure what this does
 	public static void main(String[] args)
 	{
-		String recipeFile;//put name of file here
+		String recipeFile="recipes.JSON";
 		JSONParser parser = new JSONParser();
 		try
 		{
