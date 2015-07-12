@@ -36,20 +36,21 @@ public class Recipe {
 		this.title = title;
 	}
 
-	public ArrayList<String> getIngredients() {
+	public JSONArray getIngredients() {
 		return ingredients;
 	}
 
-	public void setIngredients(ArrayList<String> ingredients) {
-		this.ingredients = ingredients;
+	public void setIngredients(String ingredient) {
+		this.ingredients.add(ingredient);
+		
 	}
 
-	public ArrayList<String> getInstructions() {
+	public JSONArray getInstructions() {
 		return instructions;
 	}
 
-	public void setInstructions(ArrayList<String> instructions) {
-		this.instructions = instructions;
+	public void setInstructions(String instruction) {
+		this.instructions.add(instruction);
 	}	
 	public void getTitleFromUser() {
 		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
@@ -62,4 +63,27 @@ public class Recipe {
 			e.printStackTrace();
 		}
 	}
+	
+	public void getIngredientsFromUser(){	
+		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+		String ingredient = null;
+		System.out.println("Enter ingredients here. Type 'quit' when finished.");
+		
+		do {
+		System.out.println("Ingredient:");
+		ingredient = bufferRead.readLine();
+		this.setIngredients(ingredient);
+		} while (ingredient.toLowerCase() != "quit");
+	}
+	
+	public void getInstructionsFromUser(){	
+		BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+		String instruction = null;
+		System.out.println("Enter instructions here. Type 'quit' when finished.");
+		
+		do {
+		System.out.println("Instruction:");
+		instruction = bufferRead.readLine();
+		this.setInstructions(instruction);
+		} while (instruction.toLowerCase() != "quit");
 }
