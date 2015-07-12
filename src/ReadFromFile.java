@@ -11,15 +11,16 @@ import org.json.simple.parser.JSONParser;
 public class ReadFromFile
 {
 	@SuppressWarnings("unchecked")//not sure what this does
-	public static void main(String[] args)
+	public static void Read()
 	{
-		String recipeFile="recipes.JSON";
+		String recipeFile="recipes.JSON";//name of file with path
 		JSONParser parser = new JSONParser();
 		try
 		{
 			Object obj = parser.parse(new FileReader(recipeFile));
 			JSONObject recipe = (JSONObject) obj;
 
+			//need while loop? to check for next recipe in file
 			String title = (String) recipe.get("Title");
 			JSONArray ingredients = (JSONArray) recipe.get("Ingredients");
 			JSONArray instructions = (JSONArray) recipe.get("Instructions");

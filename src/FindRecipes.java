@@ -55,7 +55,7 @@ public class FindRecipes {
 	        e.printStackTrace();
 	    }
 		int i = 0;
-		
+		java.util.Collections.sort(titles);//arrange titles by alphabetical order
 		for (String t:titles){
 			i++;
 			System.out.println(i + ". " + t);
@@ -69,6 +69,8 @@ public class FindRecipes {
 		ingred = (JSONArray) recipeObj.get("ingredients");
 		instr = (JSONArray) recipeObj.get("instructions");
 		Recipe recipe = new Recipe(title,ingred,instr);
+		//displayRecipe(recipe);
+		
 	}
 	public void getRecipeByIndex(){
 		while (index < 1){
@@ -87,19 +89,30 @@ public class FindRecipes {
 				index = 0;
 			}
 		}
-			
+		
+		title=titles.get(index-1);
+		//Object parsedData = null;
 		Scanner file = getRecipeFile();
-		for(int i = 0; i<index;i++){
-			file.nextLine();
+		try{
+			while (file.hasNext()){
+				Object parsedData = recipeParser.parse(file.nextLine());
+				JSONObject recipeObj = (JSONObject) parsedData;
+				String nextTitle = (String) recipeObj.get("title");
+				if(title.equals(nextTitle)){
+					grabRecipe(parsedData);
+					break;
+				
+				}
+				
+			}
+			
 		}
-		Object parsedData = null;
-		try {
-			parsedData = recipeParser.parse(file.nextLine());
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		grabRecipe(parsedData);
+		catch (ParseException e) {
+	        e.printStackTrace();
+	    }
+		
+
+		
 	}
 	
 	
