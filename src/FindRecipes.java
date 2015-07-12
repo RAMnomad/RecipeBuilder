@@ -8,6 +8,7 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -69,9 +70,21 @@ public class FindRecipes {
 		ingred = (JSONArray) recipeObj.get("ingredients");
 		instr = (JSONArray) recipeObj.get("instructions");
 		Recipe recipe = new Recipe(title,ingred,instr);
-		//displayRecipe(recipe);
+		
+		System.out.println(title);
+		System.out.println("Ingredients: ");
+		Iterator<String> iterator = ingred.iterator();
+		while(iterator.hasNext()) {
+			System.out.println(iterator.next());
+		}
+		System.out.println("Instructions: ");
+		iterator = instr.iterator();
+		while(iterator.hasNext()) {
+			System.out.println(iterator.next());
+		}
 		
 	}
+	
 	public void getRecipeByIndex(){
 		while (index < 1){
 			try{
