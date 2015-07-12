@@ -1,3 +1,4 @@
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -14,21 +15,19 @@ import java.io.FileWriter;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 
 public class FindRecipes {
     // List Recipe titles alphabetically
 	//Turn existing recipe into Recipe object
 	private int index = 0 ;
 	private String title;
-	private ArrayList<String> ingred;
-	private ArrayList<String> instr;
-	private ArrayList<String> titles = new ArrayList();
+	private JSONArray ingred,instr;
+	private ArrayList<String> titles;
 	private JSONParser recipeParser = new JSONParser();
 	
 	private Scanner getRecipeFile(){
 		Scanner file = null;
-		File recipeFile = new File("/files/recipes.json");
+		File recipeFile = new File("C://recipes.json");
 		try{
 			file = new Scanner(recipeFile);
 		}
@@ -64,7 +63,13 @@ public class FindRecipes {
 			
 		
 	}
-	
+	public void grabRecipe(Object parsedData){
+		JSONObject recipeObj = (JSONObject) parsedData;
+		title = (String) recipeObj.get("title");
+		ingred = (JSONArray) recipeObj.get("ingredients");
+		instr = (JSONArray) recipeObj.get("instructions");
+		Recipe recipe = new Recipe(title,ingred,instr);
+	}
 	public void getRecipeByIndex(){
 		while (index < 1){
 			try{
@@ -94,12 +99,40 @@ public class FindRecipes {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		JSONObject recipeObj = (JSONObject) parsedData;
-		title = (String) recipeObj.get("title");
-		ingred = (ArrayList<String>) recipeObj.get("ingredients");
-		instr = (ArrayList<String>) recipeObj.get("instructions");
-		Recipe recipe = new Recipe(title,ingred,instr);
+		grabRecipe(parsedData);
 	}
-	public void getRecipeByTitle(){}
+	
+	
+	public void getRecipeByTitle(){
+		String userTitle = null, fileTitle = null;
+		Object parsedData = null;
+		while (userTitle == null){
+			try{
+	    		System.out.print("Please enter the title of the recipe you wish to view: ");
+	    	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+	    	    userTitle = bufferRead.readLine();
+	    
+	    	}
+	    	catch(IOException e)
+	    	{
+	    		e.printStackTrace();
+	    	}
+			Scanner file = getRecipeFile();
+			while (userTitle.toLowerCase()!=fileTitle.toLowerCase()&&file.hasNextLine()){
+				
+				try {
+					parsedData = recipeParser.parse(file.nextLine());
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				JSONObject recipeObj = (JSONObject) parsedData;
+				fileTitle = (String) recipeObj.get("title");	
+			}
+			if	(userTitle.toLowerCase()!=fileTitle.toLowerCase()){
+				grabRecipe(parsedData);
+			}
+		}
+	}
 	
 }
