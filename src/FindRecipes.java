@@ -8,6 +8,7 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -56,7 +57,7 @@ public class FindRecipes {
 	        e.printStackTrace();
 	    }
 		int i = 0;
-		
+		java.util.Collections.sort(titles);//arrange titles by alphabetical order
 		for (String t:titles){
 			i++;
 			System.out.println(i + ". " + t);
@@ -70,7 +71,21 @@ public class FindRecipes {
 		ingred = (JSONArray) recipeObj.get("ingredients");
 		instr = (JSONArray) recipeObj.get("instructions");
 		Recipe recipe = new Recipe(title,ingred,instr);
+		
+		System.out.println(title);
+		System.out.println("Ingredients: ");
+		Iterator<String> iterator = ingred.iterator();
+		while(iterator.hasNext()) {
+			System.out.println(iterator.next());
+		}
+		System.out.println("Instructions: ");
+		iterator = instr.iterator();
+		while(iterator.hasNext()) {
+			System.out.println(iterator.next());
+		}
+		
 	}
+	
 	public void getRecipeByIndex(){
 		while (index < 1){
 			try{
@@ -88,19 +103,30 @@ public class FindRecipes {
 				index = 0;
 			}
 		}
-			
+		
+		title=titles.get(index-1);
+		//Object parsedData = null;
 		Scanner file = getRecipeFile();
-		for(int i = 0; i<index;i++){
-			file.nextLine();
+		try{
+			while (file.hasNext()){
+				Object parsedData = recipeParser.parse(file.nextLine());
+				JSONObject recipeObj = (JSONObject) parsedData;
+				String nextTitle = (String) recipeObj.get("title");
+				if(title.equals(nextTitle)){
+					grabRecipe(parsedData);
+					break;
+				
+				}
+				
+			}
+			
 		}
-		Object parsedData = null;
-		try {
-			parsedData = recipeParser.parse(file.nextLine());
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		grabRecipe(parsedData);
+		catch (ParseException e) {
+	        e.printStackTrace();
+	    }
+		
+
+		
 	}
 	
 	
