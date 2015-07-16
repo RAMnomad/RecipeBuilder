@@ -1,27 +1,28 @@
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import java.util.ArrayList;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 
 public class Recipe {
 	//TODO:save title, ingredients and instructions as recipe object.  
 	//functions to edit, delete and save to file
 	private String title;
-	private ArrayList<String> ingredients; //change to an ArrayList?
-	private ArrayList<String> instructions;//change to an ArrayList?
+	private JSONArray ingredients; 
+	private JSONArray instructions;
 	
 	public Recipe(){
 		title="New Recipe";
-		ingredients=null;
-		instructions=null;
+		ingredients=new JSONArray();
+		instructions=new JSONArray();
 		
 	}
 
-	public Recipe(String title, ArrayList<String> ingredients, ArrayList<String> instructions) {
+	public Recipe(String title, JSONArray ingredients, JSONArray instructions) {
 		super();
 		this.title = title;
 		this.ingredients = ingredients;
@@ -62,6 +63,7 @@ public class Recipe {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		this.getIngredientsFromUser();
 	}
 	
 	public void getIngredientsFromUser(){	
@@ -71,9 +73,15 @@ public class Recipe {
 		
 		do {
 		System.out.println("Ingredient:");
-		ingredient = bufferRead.readLine();
+		try {
+			ingredient = bufferRead.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.setIngredients(ingredient);
-		} while (ingredient.toLowerCase() != "quit");
+		} while (!ingredient.equalsIgnoreCase("quit"));
+		this.getInstructionsFromUser();
 	}
 	
 	public void getInstructionsFromUser(){	
@@ -83,7 +91,47 @@ public class Recipe {
 		
 		do {
 		System.out.println("Instruction:");
-		instruction = bufferRead.readLine();
+		try {
+			instruction = bufferRead.readLine();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		this.setInstructions(instruction);
-		} while (instruction.toLowerCase() != "quit");
+		} while (!instruction.equalsIgnoreCase("quit"));
+		this.writeRecipeFile(this);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void writeRecipeFile(Recipe recipe){
+		File file = null;
+		FileWriter filewriter = null;
+		try {
+			file = new File("C://temp/recipes.json");
+			if (!file.exists()){
+				boolean fileCreated = file.createNewFile();
+				if (fileCreated){
+					System.out.println("Created new recipe file.");
+				}
+				file.setWritable(true);
+			filewriter = new FileWriter("C://temp/recipes.json", true);	
+				}
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		JSONObject addRecipe = new JSONObject();
+		addRecipe.put("Title", recipe.title);
+		addRecipe.put("Ingredients", recipe.ingredients);
+		addRecipe.put("Instructions",recipe.instructions);
+		try {
+            filewriter.write(addRecipe.toJSONString());
+            System.out.println("Successfully Copied JSON Object to File...");
+            System.out.println("\nJSON Object: " + addRecipe);
+ 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+	
+	}
 }
