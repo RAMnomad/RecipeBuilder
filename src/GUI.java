@@ -11,9 +11,9 @@ public class GUI {
 
 	private JFrame frame;
 	private JPanel contentPane;
-	private JTextArea instructionsText, ingredientsText;
+	private JTextArea instructionsText, ingredientsText, listTitles;
 	private JTextField titleText;
-	//private JScrollPane ingredientsText;
+	private JScrollPane scroll;
 	private String title;
 	private JSONArray ingredients;
 	private JSONArray instructions;
@@ -87,8 +87,8 @@ public class GUI {
 		
 		makeNorthRegion(); //title area
 		makeWestRegion(); //img area
-		//makeCenterRegion(); //ing and instr 
-		makeEastRegion();   //ing and instr text areas
+		makeCenterRegion(); //ing and instr 
+		makeEastRegion();   //list of titles
 		makeSouthRegion();  //buttons for nav
 	}
 	private void makeNorthRegion(){
@@ -104,19 +104,22 @@ public class GUI {
 		//TODO add button for search feature here
 		contentPane.add(panel, BorderLayout.NORTH);
 	}
-	/*private void makeCenterRegion(){
+	private void makeEastRegion(){
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
-		panel.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+		panel.setBorder(BorderFactory.createTitledBorder("All Recipes:"));
 		
-		panel.add(new JLabel("Ingredients:"));
-		panel.setAlignmentY(Component.TOP_ALIGNMENT);
-		panel.add(new JLabel("Instructions:"));
-		panel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		contentPane.add(panel, BorderLayout.CENTER);
-	}*/
-	private void makeEastRegion(){
+		listTitles = new JTextArea("");//add method call to return titles
+		listTitles.setEditable(false);
+		listTitles.setVisible(true);
+		
+		scroll = new JScrollPane(listTitles);
+		scroll.setPreferredSize(new Dimension(200,400));
+		panel.add(scroll);
+		contentPane.add(panel, BorderLayout.EAST);
+	}
+	private void makeCenterRegion(){
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
@@ -126,9 +129,13 @@ public class GUI {
 		smallPanel.setBorder(BorderFactory.createTitledBorder("Ingredients:"));
 		ingredientsText = new JTextArea("");
 		ingredientsText.setEditable(true);
-		ingredientsText.setPreferredSize(new Dimension(300,300));
+		ingredientsText.setLineWrap(true);
+		ingredientsText.setVisible(true);
 		
-		smallPanel.add(ingredientsText);
+		
+		scroll = new JScrollPane(ingredientsText);
+		scroll.setPreferredSize(new Dimension(200,200));
+		smallPanel.add(scroll);
 		panel.add(smallPanel);
 		
 		smallPanel = new JPanel();
@@ -137,13 +144,16 @@ public class GUI {
 		
 		instructionsText = new JTextArea("");
 		instructionsText.setEditable(true);
-		instructionsText.setPreferredSize(new Dimension(400,400));
-		smallPanel.add(instructionsText);
-	
-		//smallPanel.add(ingredientsText);
-		//smallPanel.add(instructionsText);
+		instructionsText.setLineWrap(true);
+		instructionsText.setVisible(true);
+				
+		scroll = new JScrollPane(instructionsText);
+		scroll.setPreferredSize(new Dimension(200,200));
+		
+		smallPanel.add(scroll);
 		panel.add(smallPanel);
-		contentPane.add(panel, BorderLayout.EAST);
+		panel.setVisible(true);
+		contentPane.add(panel, BorderLayout.CENTER);
 		
 	}
 	private void makeWestRegion(){
@@ -157,12 +167,16 @@ public class GUI {
 	}
 	private class newListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
-			//TODO new recipe 
+			//clears text fields so new recipe can be entered
+			titleText.setText("");
+			ingredientsText.setText("");
+			instructionsText.setText("");
 		}
 	}
 	private class openListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
 			//TODO open recipe
+
 		}
 	}
 	private class saveListener implements ActionListener {
