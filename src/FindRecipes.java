@@ -26,14 +26,15 @@ public class FindRecipes {
 	private ArrayList<String> titles;
 	private JSONParser recipeParser = new JSONParser();
 	
-	private Scanner getRecipeFile(){
+	public Scanner getRecipeFile(){
 		Scanner file = null;
 		File recipeFile = new File("C://recipes.json");
 		try{
 			file = new Scanner(recipeFile);
 		}
 		catch(FileNotFoundException e){
-			System.out.println("Recipe file is missing!");
+			System.out.println("Recipe file does not exist.");
+			
 			
 		}
 		return file;
