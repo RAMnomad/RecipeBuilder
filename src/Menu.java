@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 public class Menu {
 	//TODO: Adapt sample menu to accept new menu options
 	// Local variable
-	String[] options;
+	/*String[] options;
 	public Menu (String name) {
 		switch(name){
 		case "Main":
@@ -51,5 +51,5 @@ public class Menu {
 
     
     return swValue;
-    	}
+    	}*/
 }

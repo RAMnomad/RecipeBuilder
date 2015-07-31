@@ -21,14 +21,19 @@ public class FindRecipes {
     // List Recipe titles alphabetically
 	//Turn existing recipe into Recipe object
 	private int index = 0 ;
-	private String title;
-	private JSONArray ingred,instr;
-	private ArrayList<String> titles;
-	private JSONParser recipeParser = new JSONParser();
+	public String title, ingred, instr;
+	//private JSONArray instr;
+	public ArrayList<String> titles;
+	public JSONParser recipeParser = new JSONParser();
+	public Scanner file;
+	public File recipeFile;
+	public JSONObject recipeObj;
+	public Object parsedData=new Object();
+	public String nextTitle;
 	
 	public Scanner getRecipeFile(){
-		Scanner file = null;
-		File recipeFile = new File("C://recipes.json");
+		file = null;
+		recipeFile = new File("C://temp/recipes.json");
 		try{
 			file = new Scanner(recipeFile);
 		}
@@ -40,49 +45,61 @@ public class FindRecipes {
 		return file;
 	}
 	
-	public void listAllRecipes(){
-		
-		Scanner file = getRecipeFile();
+	public ArrayList<String> listAllRecipes(){
+		System.out.println("step1");
+		file = getRecipeFile();
+		titles=new ArrayList<String>();
+		System.out.println("step2");
 		try{
+			System.out.println("step3");
+			if(!(file.hasNext())){
+				System.out.println("step4");
+				titles.add("No Recipes in File");
+			}else{
+				System.out.println("step5");
 			while (file.hasNext()){
-				Object parsedData = recipeParser.parse(file.nextLine());
-				JSONObject recipeObj = (JSONObject) parsedData;
-				String nextTitle = (String) recipeObj.get("title");
+				System.out.println("step6");
+				parsedData = recipeParser.parse(file.nextLine());
+				recipeObj = (JSONObject) parsedData;
+				nextTitle = (String) recipeObj.get("title");
 				titles.add(nextTitle);
+				System.out.println("step7");
 				
 			}
-			
+			}
 		}
 		catch (ParseException e) {
 	        e.printStackTrace();
 	    }
-		int i = 0;
+		//int i = 0;
+		System.out.println("step8");
 		java.util.Collections.sort(titles);//arrange titles by alphabetical order
-		for (String t:titles){
-			i++;
-			System.out.println(i + ". " + t);
-		}
+		//for (String t:titles){
+			//i++;
+			//System.out.println(i + ". " + t);
+		//}
+		return titles;
 			
 		
 	}
 	public void grabRecipe(Object parsedData){
 		JSONObject recipeObj = (JSONObject) parsedData;
 		title = (String) recipeObj.get("title");
-		ingred = (JSONArray) recipeObj.get("ingredients");
-		instr = (JSONArray) recipeObj.get("instructions");
+		ingred = (String) recipeObj.get("ingredients");
+		instr = (String) recipeObj.get("instructions");
 		Recipe recipe = new Recipe(title,ingred,instr);
 		
 		System.out.println(title);
 		System.out.println("Ingredients: ");
-		Iterator<String> iterator = ingred.iterator();
-		while(iterator.hasNext()) {
-			System.out.println(iterator.next());
-		}
+		//Iterator<String> iterator = ingred.iterator();
+		//while(iterator.hasNext()) {
+			//System.out.println(iterator.next());
+		//}
 		System.out.println("Instructions: ");
-		iterator = instr.iterator();
-		while(iterator.hasNext()) {
-			System.out.println(iterator.next());
-		}
+		//Iterator<String>iterator = instr.iterator();
+		//while(iterator.hasNext()) {
+			//System.out.println(iterator.next());
+		//}
 		
 	}
 	
