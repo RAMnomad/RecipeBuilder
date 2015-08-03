@@ -82,20 +82,21 @@ public class FindRecipes {
 			
 		
 	}
-	public void grabRecipe(Object parsedData){
+	public Recipe grabRecipe(Object parsedData){
 		JSONObject recipeObj = (JSONObject) parsedData;
 		title = (String) recipeObj.get("title");
 		ingred = (String) recipeObj.get("ingredients");
 		instr = (String) recipeObj.get("instructions");
 		Recipe recipe = new Recipe(title,ingred,instr);
+		return recipe;
 		
-		System.out.println(title);
-		System.out.println("Ingredients: ");
+		//System.out.println(title);
+		//System.out.println("Ingredients: ");
 		//Iterator<String> iterator = ingred.iterator();
 		//while(iterator.hasNext()) {
 			//System.out.println(iterator.next());
 		//}
-		System.out.println("Instructions: ");
+		//System.out.println("Instructions: ");
 		//Iterator<String>iterator = instr.iterator();
 		//while(iterator.hasNext()) {
 			//System.out.println(iterator.next());
@@ -147,11 +148,12 @@ public class FindRecipes {
 	}
 	
 	
-	public void getRecipeByTitle(){
-		String userTitle = null, fileTitle = null;
+	public Recipe getRecipeByTitle(String title){
+		String fileTitle = null;
 		Object parsedData = null;
-		while (userTitle == null){
-			try{
+		Recipe recipe;
+		//while (title == null){
+			/*try{
 	    		System.out.print("Please enter the title of the recipe you wish to view: ");
 	    	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
 	    	    userTitle = bufferRead.readLine();
@@ -160,9 +162,9 @@ public class FindRecipes {
 	    	catch(IOException e)
 	    	{
 	    		e.printStackTrace();
-	    	}
+	    	}*/
 			Scanner file = getRecipeFile();
-			while (userTitle.toLowerCase()!=fileTitle.toLowerCase()&&file.hasNextLine()){
+			while (title!=fileTitle&&file.hasNextLine()){
 				
 				try {
 					parsedData = recipeParser.parse(file.nextLine());
@@ -173,10 +175,14 @@ public class FindRecipes {
 				JSONObject recipeObj = (JSONObject) parsedData;
 				fileTitle = (String) recipeObj.get("title");	
 			}
-			if	(userTitle.toLowerCase()!=fileTitle.toLowerCase()){
-				grabRecipe(parsedData);
+			if	(title==fileTitle){
+				recipe=grabRecipe(parsedData);
+				
+			}else{
+				recipe=new Recipe("File not found","","");
 			}
-		}
+		//}
+			return recipe;
 	}
 	
 }

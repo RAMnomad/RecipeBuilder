@@ -23,10 +23,14 @@ public class Recipe {
 		instructions="Instructions go here\nClick Save when finished";
 		
 	}
+	//public Recipe(String title){
+		//this.title=title;
+		//this.ingredients="";
+	//}
 
 	public Recipe(String title, String ingredients, String instructions) {
 		super();
-		this.title = title;
+		setTitle(title);
 		this.ingredients = ingredients;
 		this.instructions = instructions;
 	}
@@ -36,7 +40,7 @@ public class Recipe {
 	}
 
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = title.toUpperCase();
 	}
 
 	public String getIngredients() {

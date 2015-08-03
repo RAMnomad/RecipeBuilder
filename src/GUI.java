@@ -19,10 +19,10 @@ public class GUI {
 	//private JSONArray ingredients;
 	//private JSONArray instructions;
 	private ArrayList <String> titlesArray;
-	public JButton prev, next, edit, save, send;
+	public JButton prev, next, edit, save, send, search;
 	public Recipe recipe=new Recipe();
 	//public Recipe recipe1;
-	//public FindRecipes findRecipe=new FindRecipes();
+	public FindRecipes findRecipe=new FindRecipes();
 	
 	public void buildRecipeCard() {
 		frame = new JFrame("Recipe Card");
@@ -107,7 +107,10 @@ public class GUI {
 		titleText.setEditable(true);
 		titleText.setPreferredSize(new Dimension(300,30));
 		panel.add(titleText, BorderLayout.CENTER);
-		//TODO add button for search feature here
+		//search button
+		search = new JButton("Search");
+		search.addActionListener(new openListener());
+		panel.add(search, BorderLayout.EAST);
 		contentPane.add(panel, BorderLayout.NORTH);
 	}
 	@SuppressWarnings("null")
@@ -178,7 +181,7 @@ public class GUI {
 		contentPane.add(imgLabel, BorderLayout.WEST);
 	}
 	private void makeSouthRegion(){
-		//TODO buttons for prev, next, edit, save, send shopping list?
+		//buttons for prev, next, edit, save, send shopping list
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
@@ -187,6 +190,7 @@ public class GUI {
 		next = new JButton("Next->");
 		panel.add(next);
 		edit = new JButton("Edit");
+		edit.addActionListener(new editListener());
 		panel.add(edit);
 		save = new JButton("Save");
 		save.addActionListener(new saveListener());
@@ -206,18 +210,44 @@ public class GUI {
 	}
 	private class openListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
-			//TODO open recipe
-
+			// open recipe
+			recipe=new Recipe();//should we construct with given title instead?
+			recipe.setTitle(titleText.getText());
+			//compare title to titles (look for existing in ArrayList)
+			for(String t: titlesArray){
+				if(t==recipe.getTitle()){
+					recipe=findRecipe.getRecipeByTitle(title);
+				}else{
+					recipe=new Recipe("File not found","","");
+				}
+				titleText.setText(recipe.getTitle());
+				ingredientsText.setText(recipe.getIngredients());
+				instructionsText.setText(recipe.getInstructions());
+				//titleText.setEditable(false);
+			    ingredientsText.setEditable(false);
+			    instructionsText.setEditable(false);
+			}
+		}
+	}
+	private class editListener implements ActionListener {
+		public void actionPerformed(ActionEvent e){
+			// make fields editable
+			titleText.setEditable(true);
+			ingredientsText.setEditable(true);
+			instructionsText.setEditable(true);
 		}
 	}
 	private class saveListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
-			//TODO save recipe
+			//save recipe
 			recipe=new Recipe();
 			recipe.setTitle(titleText.getText());
 			recipe.setIngredients(ingredientsText.getText());
 		    recipe.setInstructions(instructionsText.getText());
 		    recipe.writeRecipeFile(recipe);
+		    titleText.setEditable(false);
+		    ingredientsText.setEditable(false);
+		    instructionsText.setEditable(false);
 		    //System.out.println(recipe.getTitle());
 		   // System.out.println(recipe.getIngredients());
 		}
