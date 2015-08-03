@@ -23,15 +23,16 @@ public class FindRecipes {
 	private int index = 0 ;
 	public String title, ingred, instr;
 	//private JSONArray instr;
-	public ArrayList<String> titles;
+	public ArrayList<String> titles=new ArrayList<String>();
 	public JSONParser recipeParser = new JSONParser();
+	public JSONArray array= new JSONArray();
 	public Scanner file;
 	public File recipeFile;
 	public JSONObject recipeObj;
 	public Object parsedData=new Object();
-	public String nextTitle;
+	public String nextTitle="";
 	
-	public Scanner getRecipeFile(){
+	public Scanner getRecipeFile() throws IOException{
 		file = null;
 		recipeFile = new File("C://temp/recipes.json");
 		try{
@@ -39,13 +40,17 @@ public class FindRecipes {
 		}
 		catch(FileNotFoundException e){
 			System.out.println("Recipe file does not exist.");
-			
+			boolean fileCreated = recipeFile.createNewFile();
+			if (fileCreated){
+				System.out.println("Created new recipe file.");//change to pop up alert?
+				file=getRecipeFile();
+			}
 			
 		}
 		return file;
 	}
 	
-	public ArrayList<String> listAllRecipes(){
+	public ArrayList<String> listAllRecipes() throws IOException{
 		System.out.println("step1");
 		file = getRecipeFile();
 		titles=new ArrayList<String>();
@@ -54,15 +59,22 @@ public class FindRecipes {
 			System.out.println("step3");
 			if(!(file.hasNext())){
 				System.out.println("step4");
-				titles.add("No Recipes in File");
+				ArrayList<String> noRecipes = new ArrayList<String>();
+				noRecipes.add("No Recipes in File");
+				return noRecipes;
 			}else{
 				System.out.println("step5");
 			while (file.hasNext()){
 				System.out.println("step6");
 				parsedData = recipeParser.parse(file.nextLine());
-				recipeObj = (JSONObject) parsedData;
-				nextTitle = (String) recipeObj.get("title");
-				titles.add(nextTitle);
+				recipeObj=(JSONObject)parsedData;
+				//array=(JSONArray)parsedData;
+			
+				//for(int index=0; index<array.size(); index++){
+					//recipeObj = (JSONObject) array.get(index);
+					nextTitle = (String) recipeObj.get("title");
+					titles.add(nextTitle);
+				//}
 				System.out.println("step7");
 				
 			}
@@ -104,7 +116,7 @@ public class FindRecipes {
 		
 	}
 	
-	public void getRecipeByIndex(){
+	public void getRecipeByIndex() throws IOException{
 		while (index < 1){
 			try{
 	    		System.out.print("Please enter the number of the recipe you wish to view: ");
@@ -148,7 +160,7 @@ public class FindRecipes {
 	}
 	
 	
-	public Recipe getRecipeByTitle(String title){
+	public Recipe getRecipeByTitle(String title) throws IOException{
 		String fileTitle = null;
 		Object parsedData = null;
 		Recipe recipe;

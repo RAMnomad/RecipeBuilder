@@ -15,19 +15,20 @@ public class GUI {
 	private JTextArea instructionsText, ingredientsText, listTitles;
 	private JTextField titleText;
 	private JScrollPane scroll;
-	private String title, titles;
+	public String title="";
+	public String titles="";
 	//private JSONArray ingredients;
 	//private JSONArray instructions;
-	private ArrayList <String> titlesArray;
+	public ArrayList <String> titlesArray=new ArrayList<String>();
 	public JButton prev, next, edit, save, send, search;
 	public Recipe recipe=new Recipe();
 	//public Recipe recipe1;
 	public FindRecipes findRecipe=new FindRecipes();
 	
-	public void buildRecipeCard() {
+	public void buildRecipeCard() throws IOException {
 		frame = new JFrame("Recipe Card");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Container contentPane = frame.getContentPane();
+		//Container contentPane = frame.getContentPane();
 		makeMenus();
 		makeDisplayArea();
 		frame.pack();
@@ -86,7 +87,7 @@ public class GUI {
 		return menu;
 		
 	}
-	private void makeDisplayArea(){
+	private void makeDisplayArea() throws IOException{
 		contentPane = (JPanel)frame.getContentPane();
 		contentPane.setLayout(new BorderLayout(6,6));
 		contentPane.setBorder(BorderFactory.createEmptyBorder(6,6,6,6));
@@ -113,8 +114,7 @@ public class GUI {
 		panel.add(search, BorderLayout.EAST);
 		contentPane.add(panel, BorderLayout.NORTH);
 	}
-	@SuppressWarnings("null")
-	private void makeEastRegion(){
+	private void makeEastRegion() throws IOException{
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
@@ -126,8 +126,15 @@ public class GUI {
 		//method call to return titles
 		titlesArray = findRecipes.listAllRecipes();
 		System.out.println("b");
-		for(String title : titlesArray)
-			titles = (titles + "\n" + title);
+		//for(String title : titlesArray)
+		Iterator<String> iterator = titlesArray.iterator();
+				while(iterator.hasNext()){
+					if (iterator.next()!= null){
+						title=iterator.next();
+						titles = (titles + "\n" + title);
+					}
+				}
+			
 		listTitles = new JTextArea(titles);
 		listTitles.setEditable(false);
 		listTitles.setVisible(true);
@@ -216,7 +223,12 @@ public class GUI {
 			//compare title to titles (look for existing in ArrayList)
 			for(String t: titlesArray){
 				if(t==recipe.getTitle()){
-					recipe=findRecipe.getRecipeByTitle(title);
+					try {
+						recipe=findRecipe.getRecipeByTitle(title);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}else{
 					recipe=new Recipe("File not found","","");
 				}
@@ -256,7 +268,12 @@ public class GUI {
 	private class listListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
 			//TODO list titles
-			makeEastRegion();//will this work to refresh the list of titles???
+			try {
+				makeEastRegion();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}//will this work to refresh the list of titles???
 		}
 	}
 	private class exitListener implements ActionListener {
