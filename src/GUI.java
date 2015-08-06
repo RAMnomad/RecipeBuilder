@@ -3,6 +3,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.*;
 import java.util.*;
@@ -11,17 +12,23 @@ public class GUI {
 
 	private JFrame frame;
 	private JPanel contentPane;
-	private JTextArea instructionsText, ingredientsText;
+	private JTextArea instructionsText, ingredientsText, listTitles;
 	private JTextField titleText;
-	//private JScrollPane ingredientsText;
-	private String title;
-	private JSONArray ingredients;
-	private JSONArray instructions;
+	private JScrollPane scroll;
+	public String title="";
+	public String titles="";
+	//private JSONArray ingredients;
+	//private JSONArray instructions;
+	public ArrayList <String> titlesArray=new ArrayList<String>();
+	public JButton prev, next, edit, save, send, search;
+	public Recipe recipe=new Recipe();
+	//public Recipe recipe1;
+	public FindRecipes findRecipe=new FindRecipes();
 	
-	public void buildRecipeCard() {
+	public void buildRecipeCard() throws IOException {
 		frame = new JFrame("Recipe Card");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Container contentPane = frame.getContentPane();
+		//Container contentPane = frame.getContentPane();
 		makeMenus();
 		makeDisplayArea();
 		frame.pack();
@@ -80,15 +87,15 @@ public class GUI {
 		return menu;
 		
 	}
-	private void makeDisplayArea(){
+	private void makeDisplayArea() throws IOException{
 		contentPane = (JPanel)frame.getContentPane();
 		contentPane.setLayout(new BorderLayout(6,6));
 		contentPane.setBorder(BorderFactory.createEmptyBorder(6,6,6,6));
 		
 		makeNorthRegion(); //title area
 		makeWestRegion(); //img area
-		//makeCenterRegion(); //ing and instr 
-		makeEastRegion();   //ing and instr text areas
+		makeCenterRegion(); //ing and instr 
+		makeEastRegion();   //list of titles
 		makeSouthRegion();  //buttons for nav
 	}
 	private void makeNorthRegion(){
@@ -97,26 +104,47 @@ public class GUI {
 		panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
 		panel.setBorder(BorderFactory.createTitledBorder("Title:"));
 		//panel.setPreferredSize(new Dimension(150,0));
-		titleText = new JTextField("");
+		titleText = new JTextField(recipe.getTitle());
 		titleText.setEditable(true);
 		titleText.setPreferredSize(new Dimension(300,30));
 		panel.add(titleText, BorderLayout.CENTER);
-		//TODO add button for search feature here
+		//search button
+		search = new JButton("Search");
+		search.addActionListener(new openListener());
+		panel.add(search, BorderLayout.EAST);
 		contentPane.add(panel, BorderLayout.NORTH);
 	}
-	/*private void makeCenterRegion(){
+	private void makeEastRegion() throws IOException{
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
-		panel.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
+		panel.setBorder(BorderFactory.createTitledBorder("All Recipes:"));
 		
-		panel.add(new JLabel("Ingredients:"));
-		panel.setAlignmentY(Component.TOP_ALIGNMENT);
-		panel.add(new JLabel("Instructions:"));
-		panel.setAlignmentY(Component.CENTER_ALIGNMENT);
-		contentPane.add(panel, BorderLayout.CENTER);
-	}*/
-	private void makeEastRegion(){
+		FindRecipes findRecipes = new FindRecipes();
+		
+		System.out.println("a");
+		//method call to return titles
+		titlesArray = findRecipes.listAllRecipes();
+		System.out.println("b");
+		//for(String title : titlesArray)
+		Iterator<String> iterator = titlesArray.iterator();
+				while(iterator.hasNext()){
+					if (iterator.hasNext()){
+						title=iterator.next();
+						titles = (titles + "\n" + title);
+					}
+				}
+			
+		listTitles = new JTextArea(titles);
+		listTitles.setEditable(false);
+		listTitles.setVisible(true);
+		
+		scroll = new JScrollPane(listTitles);
+		scroll.setPreferredSize(new Dimension(200,400));
+		panel.add(scroll);
+		contentPane.add(panel, BorderLayout.EAST);
+	}
+	private void makeCenterRegion(){
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(3,3,3,3));
@@ -124,26 +152,33 @@ public class GUI {
 		JPanel smallPanel = new JPanel();
 		smallPanel.setLayout(new BoxLayout(smallPanel,BoxLayout.Y_AXIS));
 		smallPanel.setBorder(BorderFactory.createTitledBorder("Ingredients:"));
-		ingredientsText = new JTextArea("");
+		ingredientsText = new JTextArea(recipe.getIngredients());
 		ingredientsText.setEditable(true);
-		ingredientsText.setPreferredSize(new Dimension(300,300));
+		ingredientsText.setLineWrap(true);
+		ingredientsText.setVisible(true);
 		
-		smallPanel.add(ingredientsText);
+		
+		scroll = new JScrollPane(ingredientsText);
+		scroll.setPreferredSize(new Dimension(200,200));
+		smallPanel.add(scroll);
 		panel.add(smallPanel);
 		
 		smallPanel = new JPanel();
 		smallPanel.setLayout(new BoxLayout(smallPanel,BoxLayout.Y_AXIS));
 		smallPanel.setBorder(BorderFactory.createTitledBorder("Instructions:"));
 		
-		instructionsText = new JTextArea("");
+		instructionsText = new JTextArea(recipe.getInstructions());
 		instructionsText.setEditable(true);
-		instructionsText.setPreferredSize(new Dimension(400,400));
-		smallPanel.add(instructionsText);
-	
-		//smallPanel.add(ingredientsText);
-		//smallPanel.add(instructionsText);
+		instructionsText.setLineWrap(true);
+		instructionsText.setVisible(true);
+				
+		scroll = new JScrollPane(instructionsText);
+		scroll.setPreferredSize(new Dimension(200,200));
+		
+		smallPanel.add(scroll);
 		panel.add(smallPanel);
-		contentPane.add(panel, BorderLayout.EAST);
+		panel.setVisible(true);
+		contentPane.add(panel, BorderLayout.CENTER);
 		
 	}
 	private void makeWestRegion(){
@@ -153,26 +188,92 @@ public class GUI {
 		contentPane.add(imgLabel, BorderLayout.WEST);
 	}
 	private void makeSouthRegion(){
-		//TODO buttons for prev, next, edit, save, send shopping list?
+		//buttons for prev, next, edit, save, send shopping list
+		JPanel panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
+		panel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+		prev = new JButton("<-Prev");
+		panel.add(prev);
+		next = new JButton("Next->");
+		panel.add(next);
+		edit = new JButton("Edit");
+		edit.addActionListener(new editListener());
+		panel.add(edit);
+		save = new JButton("Save");
+		save.addActionListener(new saveListener());
+		panel.add(save);
+		send = new JButton("Send Shopping List");
+		panel.add(send);
+		contentPane.add(panel, BorderLayout.SOUTH);
 	}
 	private class newListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
-			//TODO new recipe 
+			//clears text fields so new recipe can be entered
+			recipe=new Recipe();
+			titleText.setText(recipe.getTitle());
+			ingredientsText.setText(recipe.getIngredients());
+			instructionsText.setText(recipe.getInstructions());
 		}
 	}
 	private class openListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
-			//TODO open recipe
+			// open recipe
+			recipe=new Recipe();//should we construct with given title instead?
+			recipe.setTitle(titleText.getText());
+			//compare title to titles (look for existing in ArrayList)
+			for(String t: titlesArray){
+				if(t==recipe.getTitle()){
+					try {
+						recipe=findRecipe.getRecipeByTitle(title);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}else{
+					recipe=new Recipe("File not found","","");
+				}
+				titleText.setText(recipe.getTitle());
+				ingredientsText.setText(recipe.getIngredients());
+				instructionsText.setText(recipe.getInstructions());
+				//titleText.setEditable(false);
+			    ingredientsText.setEditable(false);
+			    instructionsText.setEditable(false);
+			}
+		}
+	}
+	private class editListener implements ActionListener {
+		public void actionPerformed(ActionEvent e){
+			// make fields editable
+			titleText.setEditable(true);
+			ingredientsText.setEditable(true);
+			instructionsText.setEditable(true);
 		}
 	}
 	private class saveListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
-			//TODO save recipe
+			//save recipe
+			recipe=new Recipe();
+			recipe.setTitle(titleText.getText());
+			recipe.setIngredients(ingredientsText.getText());
+		    recipe.setInstructions(instructionsText.getText());
+		    recipe.writeRecipeFile(recipe);
+		    titleText.setEditable(false);
+		    ingredientsText.setEditable(false);
+		    instructionsText.setEditable(false);
+		    //System.out.println(recipe.getTitle());
+		   // System.out.println(recipe.getIngredients());
 		}
+		   
 	}
 	private class listListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
 			//TODO list titles
+			try {
+				makeEastRegion();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}//will this work to refresh the list of titles???
 		}
 	}
 	private class exitListener implements ActionListener {
