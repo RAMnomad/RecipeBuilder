@@ -32,7 +32,7 @@ public class FindRecipes {
 	public Object parsedData=new Object();
 	public String nextTitle="";
 	
-	public Scanner getRecipeFile() throws IOException{
+	public File getRecipeFile() throws IOException{
 		file = null;
 		recipeFile = new File("C://temp/recipes.json");
 		try{
@@ -43,21 +43,24 @@ public class FindRecipes {
 			boolean fileCreated = recipeFile.createNewFile();
 			if (fileCreated){
 				System.out.println("Created new recipe file.");//change to pop up alert?
-				file=getRecipeFile();
+				recipeFile=getRecipeFile();
 			}
 			
 		}
-		return file;
+		return recipeFile;
 	}
 	
 	public ArrayList<String> listAllRecipes() throws IOException{
 		System.out.println("step1");
-		file = getRecipeFile();
+		recipeFile = getRecipeFile();
+		file=new Scanner(recipeFile);
 		titles=new ArrayList<String>();
+		titles.add("");
 		System.out.println("step2");
 		try{
 			System.out.println("step3");
-			if(!(file.hasNext())){
+			
+			if(!file.hasNext()){
 				System.out.println("step4");
 				ArrayList<String> noRecipes = new ArrayList<String>();
 				noRecipes.add("No Recipes in File");
@@ -136,7 +139,7 @@ public class FindRecipes {
 		
 		title=titles.get(index-1);
 		//Object parsedData = null;
-		Scanner file = getRecipeFile();
+		Scanner file = new Scanner(getRecipeFile());
 		try{
 			while (file.hasNext()){
 				Object parsedData = recipeParser.parse(file.nextLine());
@@ -175,7 +178,7 @@ public class FindRecipes {
 	    	{
 	    		e.printStackTrace();
 	    	}*/
-			Scanner file = getRecipeFile();
+			Scanner file =new Scanner( getRecipeFile());
 			while (title!=fileTitle&&file.hasNextLine()){
 				
 				try {

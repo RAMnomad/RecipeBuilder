@@ -129,7 +129,7 @@ public class GUI {
 		//for(String title : titlesArray)
 		Iterator<String> iterator = titlesArray.iterator();
 				while(iterator.hasNext()){
-					if (iterator.next()!= null){
+					if (iterator.hasNext()){
 						title=iterator.next();
 						titles = (titles + "\n" + title);
 					}
