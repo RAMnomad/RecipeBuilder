@@ -8,35 +8,33 @@ import org.json.simple.parser.ParseException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Scanner;
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class FindRecipes {
-    // List Recipe titles alphabetically
+	// List Recipe titles alphabetically
 	//Turn existing recipe into Recipe object
+	
 	private int index = 0 ;
 	public String title, ingred, instr;
-	//private JSONArray instr;
-	public ArrayList<String> titles=new ArrayList<String>();
+	
+	public ArrayList<String> titles;
 	public JSONParser recipeParser = new JSONParser();
 	public JSONArray array= new JSONArray();
-	public Scanner file;
+	
 	public File recipeFile;
 	public JSONObject recipeObj;
 	public Object parsedData=new Object();
 	public String nextTitle="";
 	
 	public File getRecipeFile() throws IOException{
-		file = null;
+		Scanner file = null;
 		recipeFile = new File("C://temp/recipes.json");
 		try{
 			file = new Scanner(recipeFile);
+			
 		}
 		catch(FileNotFoundException e){
 			System.out.println("Recipe file does not exist.");
@@ -53,7 +51,7 @@ public class FindRecipes {
 	public ArrayList<String> listAllRecipes() throws IOException{
 		System.out.println("step1");
 		recipeFile = getRecipeFile();
-		file=new Scanner(recipeFile);
+		Scanner file=new Scanner(recipeFile);
 		titles=new ArrayList<String>();
 		titles.add("");
 		System.out.println("step2");
@@ -64,35 +62,27 @@ public class FindRecipes {
 				System.out.println("step4");
 				ArrayList<String> noRecipes = new ArrayList<String>();
 				noRecipes.add("No Recipes in File");
+				file.close();
 				return noRecipes;
 			}else{
-				System.out.println("step5");
-			while (file.hasNext()){
-				System.out.println("step6");
-				parsedData = recipeParser.parse(file.nextLine());
-				recipeObj=(JSONObject)parsedData;
-				//array=(JSONArray)parsedData;
-			
-				//for(int index=0; index<array.size(); index++){
-					//recipeObj = (JSONObject) array.get(index);
-					nextTitle = (String) recipeObj.get("title");
+				while (file.hasNext()){
+					array.addAll((JSONArray)recipeParser.parse(file.nextLine()));
+				}
+				for(int index=0; index<array.size(); index++){
+					recipeObj = (JSONObject) array.get(index);
+					nextTitle = (String) recipeObj.get("Title");
 					titles.add(nextTitle);
-				//}
-				System.out.println("step7");
+				}
 				
-			}
+			file.close();
 			}
 		}
 		catch (ParseException e) {
 	        e.printStackTrace();
 	    }
-		//int i = 0;
-		System.out.println("step8");
+	
 		java.util.Collections.sort(titles);//arrange titles by alphabetical order
-		//for (String t:titles){
-			//i++;
-			//System.out.println(i + ". " + t);
-		//}
+		
 		return titles;
 			
 		

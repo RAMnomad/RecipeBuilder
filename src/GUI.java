@@ -20,7 +20,7 @@ public class GUI {
 	//private JSONArray ingredients;
 	//private JSONArray instructions;
 	public ArrayList <String> titlesArray=new ArrayList<String>();
-	public JButton prev, next, edit, save, send, search;
+	public JButton prev, next, edit, save, send, search, newRecipe;
 	public Recipe recipe=new Recipe();
 	//public Recipe recipe1;
 	public FindRecipes findRecipe=new FindRecipes();
@@ -129,10 +129,10 @@ public class GUI {
 		//for(String title : titlesArray)
 		Iterator<String> iterator = titlesArray.iterator();
 				while(iterator.hasNext()){
-					if (iterator.hasNext()){
+					
 						title=iterator.next();
 						titles = (titles + "\n" + title);
-					}
+					
 				}
 			
 		listTitles = new JTextArea(titles);
@@ -192,6 +192,9 @@ public class GUI {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+		newRecipe= new JButton("New");
+		newRecipe.addActionListener(new newListener());
+		panel.add(newRecipe);
 		prev = new JButton("<-Prev");
 		panel.add(prev);
 		next = new JButton("Next->");
@@ -221,17 +224,30 @@ public class GUI {
 			recipe=new Recipe();//should we construct with given title instead?
 			recipe.setTitle(titleText.getText());
 			//compare title to titles (look for existing in ArrayList)
-			for(String t: titlesArray){
-				if(t==recipe.getTitle()){
+			FindRecipes findrecipes=new FindRecipes();
+			try {
+				titlesArray=findrecipes.listAllRecipes();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			System.out.println(titlesArray);
+			Iterator<String> iterator=titlesArray.iterator();
+			while(iterator.hasNext()){
+				if(iterator.next().equalsIgnoreCase(recipe.getTitle())){
+					System.out.println("title");
 					try {
-						recipe=findRecipe.getRecipeByTitle(title);
+						recipe=findrecipes.getRecipeByTitle(recipe.getTitle());
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-				}else{
+					break;
+				}
+				else{
 					recipe=new Recipe("File not found","","");
 				}
+			
 				titleText.setText(recipe.getTitle());
 				ingredientsText.setText(recipe.getIngredients());
 				instructionsText.setText(recipe.getInstructions());
@@ -260,6 +276,13 @@ public class GUI {
 		    titleText.setEditable(false);
 		    ingredientsText.setEditable(false);
 		    instructionsText.setEditable(false);
+		    try {
+				makeEastRegion();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		    
 		    //System.out.println(recipe.getTitle());
 		   // System.out.println(recipe.getIngredients());
 		}
