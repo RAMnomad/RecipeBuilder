@@ -29,7 +29,7 @@ public class Recipe {
 
 	public Recipe(String title, String ingredients, String instructions) {
 		super();
-		setTitle(title);
+		this.title=title;
 		this.ingredients = ingredients;
 		this.instructions = instructions;
 	}
@@ -39,7 +39,7 @@ public class Recipe {
 	}
 
 	public void setTitle(String title) {
-		this.title = title.toUpperCase();
+		this.title = title;
 	}
 
 	public String getIngredients() {
@@ -109,7 +109,6 @@ public class Recipe {
 	            System.out.println("\nJSON Object: " + addRecipe);
 	            filewriter.flush();
 	            filewriter.close();
-				//}
 	 
 	        } catch (IOException e) {
 	            e.printStackTrace();
