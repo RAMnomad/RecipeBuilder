@@ -11,32 +11,25 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class FindRecipes {
-    // List Recipe titles alphabetically
-	//Turn existing recipe into Recipe object
-	private int index = 0 ;
-	public String title, ingred, instr;
-	//private JSONArray instr;
-	public ArrayList<String> titles=new ArrayList<String>();
-	public JSONParser recipeParser = new JSONParser();
-	public JSONArray array= new JSONArray();
-	public Scanner file;
+	// List Recipe titles alphabetically
+	//Find Recipe by title
+	
+	public ArrayList<String> titles;
+	public JSONArray array;
 	public File recipeFile;
 	public JSONObject recipeObj;
-	public Object parsedData=new Object();
-	public String nextTitle="";
+	
 	
 	public File getRecipeFile() throws IOException{
-		file = null;
+		Scanner file = null;
 		recipeFile = new File("C://temp/recipes.json");
 		try{
 			file = new Scanner(recipeFile);
+			
 		}
 		catch(FileNotFoundException e){
 			System.out.println("Recipe file does not exist.");
@@ -52,58 +45,61 @@ public class FindRecipes {
 	
 	public ArrayList<String> listAllRecipes() throws IOException{
 		System.out.println("step1");
-		recipeFile = getRecipeFile();
-		file=new Scanner(recipeFile);
 		titles=new ArrayList<String>();
-		titles.add("");
-		System.out.println("step2");
+		String nextTitle;
+		getRecipeArray();
+		if(!getRecipeArray()){
+			ArrayList<String> noRecipes = new ArrayList<String>();
+			noRecipes.add("No Recipes in File");
+			return noRecipes;
+		}else{
+			for(int index=0; index<array.size(); index++){
+				recipeObj = (JSONObject) array.get(index);
+				nextTitle = (String) recipeObj.get("Title");
+				System.out.println(nextTitle);
+				titles.add(nextTitle);
+				System.out.println(titles);
+			}
+			System.out.println(titles);
+			//java.util.Collections.sort(titles);//arrange titles by alphabetical order
+			System.out.println(titles);
+			return titles;
+		}
+	}
+	public boolean getRecipeArray() throws IOException{
+		recipeFile=getRecipeFile();
+		Scanner file=new Scanner(recipeFile);
+		JSONParser recipeParser=new JSONParser();
+		boolean fileHasRecipes=false;
+		array=new JSONArray();
 		try{
 			System.out.println("step3");
 			
 			if(!file.hasNext()){
 				System.out.println("step4");
-				ArrayList<String> noRecipes = new ArrayList<String>();
-				noRecipes.add("No Recipes in File");
-				return noRecipes;
+				file.close();
+				return fileHasRecipes;
 			}else{
-				System.out.println("step5");
-			while (file.hasNext()){
-				System.out.println("step6");
-				parsedData = recipeParser.parse(file.nextLine());
-				recipeObj=(JSONObject)parsedData;
-				//array=(JSONArray)parsedData;
-			
-				//for(int index=0; index<array.size(); index++){
-					//recipeObj = (JSONObject) array.get(index);
-					nextTitle = (String) recipeObj.get("title");
-					titles.add(nextTitle);
+				//while (file.hasNext()){
+					array.addAll((JSONArray)recipeParser.parse(file.nextLine()));
 				//}
-				System.out.println("step7");
-				
+				fileHasRecipes=true;
 			}
-			}
+		
 		}
 		catch (ParseException e) {
 	        e.printStackTrace();
 	    }
-		//int i = 0;
-		System.out.println("step8");
-		java.util.Collections.sort(titles);//arrange titles by alphabetical order
-		//for (String t:titles){
-			//i++;
-			//System.out.println(i + ". " + t);
-		//}
-		return titles;
-			
-		
+		file.close();
+		return fileHasRecipes;
 	}
-	public Recipe grabRecipe(Object parsedData){
-		JSONObject recipeObj = (JSONObject) parsedData;
-		title = (String) recipeObj.get("title");
-		ingred = (String) recipeObj.get("ingredients");
-		instr = (String) recipeObj.get("instructions");
-		Recipe recipe = new Recipe(title,ingred,instr);
-		return recipe;
+	//public Recipe nextRecipe(){
+//		JSONObject recipeObj = (JSONObject) parsedData;
+	//	title = (String) recipeObj.get("title");
+		//ingred = (String) recipeObj.get("ingredients");
+		//instr = (String) recipeObj.get("instructions");
+		//Recipe recipe = new Recipe(title,ingred,instr);
+		//return recipe;
 		
 		//System.out.println(title);
 		//System.out.println("Ingredients: ");
@@ -117,87 +113,40 @@ public class FindRecipes {
 			//System.out.println(iterator.next());
 		//}
 		
-	}
+	//}
 	
-	public void getRecipeByIndex() throws IOException{
-		while (index < 1){
-			try{
-	    		System.out.print("Please enter the number of the recipe you wish to view: ");
-	    	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-	    	    index = Integer.parseInt(bufferRead.readLine());
-	    
-	    	}
-	    	catch(IOException e)
-	    	{
-	    		e.printStackTrace();
-	    	}
-			if (index > titles.size()){
-				System.out.println("Invalid entry. Out of range.");
-				index = 0;
-			}
-		}
+	
 		
-		title=titles.get(index-1);
-		//Object parsedData = null;
-		Scanner file = new Scanner(getRecipeFile());
-		try{
-			while (file.hasNext()){
-				Object parsedData = recipeParser.parse(file.nextLine());
-				JSONObject recipeObj = (JSONObject) parsedData;
-				String nextTitle = (String) recipeObj.get("title");
-				if(title.equals(nextTitle)){
-					grabRecipe(parsedData);
-					break;
-				
-				}
-				
-			}
-			
-		}
-		catch (ParseException e) {
-	        e.printStackTrace();
-	    }
-		
-
-		
-	}
 	
 	
 	public Recipe getRecipeByTitle(String title) throws IOException{
-		String fileTitle = null;
-		Object parsedData = null;
-		Recipe recipe;
-		//while (title == null){
-			/*try{
-	    		System.out.print("Please enter the title of the recipe you wish to view: ");
-	    	    BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-	    	    userTitle = bufferRead.readLine();
-	    
-	    	}
-	    	catch(IOException e)
-	    	{
-	    		e.printStackTrace();
-	    	}*/
-			Scanner file =new Scanner( getRecipeFile());
-			while (title!=fileTitle&&file.hasNextLine()){
-				
-				try {
-					parsedData = recipeParser.parse(file.nextLine());
-				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				JSONObject recipeObj = (JSONObject) parsedData;
-				fileTitle = (String) recipeObj.get("title");	
-			}
-			if	(title==fileTitle){
-				recipe=grabRecipe(parsedData);
-				
-			}else{
-				recipe=new Recipe("File not found","","");
-			}
-		//}
+		
+		//getRecipeArray();
+		Recipe recipe= new Recipe();
+		if(!getRecipeArray()){
+			recipe.setTitle("No Recipes in File");
 			return recipe;
-	}
+		}else{
+			//Iterator<String> iterator=titles.iterator();
+			//while(iterator.hasNext()){
+				//if(title.equalsIgnoreCase(iterator.next())){
+					//recipe.setTitle(title);
+					//recipe.setIngredients(ingredient);
+				//}
+			//}
+			for(int index=0; index<array.size(); index++){
+				recipeObj = (JSONObject) array.get(index);
+				if(title.equalsIgnoreCase((String)recipeObj.get("Title"))){
+					recipe.setTitle(title);
+					System.out.println("found in json array");
+					System.out.println(title+"1");
+					recipe.setIngredients((String)recipeObj.get("Ingredients"));
+					recipe.setInstructions((String)recipeObj.get("Instructions"));
+					break;
+				}
 	
+			}
+			return recipe;
+		}
+	}
 }

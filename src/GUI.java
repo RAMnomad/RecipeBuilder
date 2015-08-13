@@ -15,14 +15,11 @@ public class GUI {
 	private JTextArea instructionsText, ingredientsText, listTitles;
 	private JTextField titleText;
 	private JScrollPane scroll;
-	public String title="";
+	public String title;
 	public String titles="";
-	//private JSONArray ingredients;
-	//private JSONArray instructions;
 	public ArrayList <String> titlesArray=new ArrayList<String>();
-	public JButton prev, next, edit, save, send, search;
+	public JButton prev, next, edit, save, send, search, newRecipe;
 	public Recipe recipe=new Recipe();
-	//public Recipe recipe1;
 	public FindRecipes findRecipe=new FindRecipes();
 	
 	public void buildRecipeCard() throws IOException {
@@ -120,20 +117,17 @@ public class GUI {
 		panel.setLayout(new BoxLayout(panel,BoxLayout.Y_AXIS));
 		panel.setBorder(BorderFactory.createTitledBorder("All Recipes:"));
 		
-		FindRecipes findRecipes = new FindRecipes();
+		//FindRecipes findRecipes = new FindRecipes();
 		
 		System.out.println("a");
 		//method call to return titles
-		titlesArray = findRecipes.listAllRecipes();
+		titlesArray = findRecipe.listAllRecipes();
 		System.out.println("b");
-		//for(String title : titlesArray)
 		Iterator<String> iterator = titlesArray.iterator();
 				while(iterator.hasNext()){
-					if (iterator.hasNext()){
 						title=iterator.next();
 						titles = (titles + "\n" + title);
 					}
-				}
 			
 		listTitles = new JTextArea(titles);
 		listTitles.setEditable(false);
@@ -192,9 +186,14 @@ public class GUI {
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
 		panel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+		newRecipe= new JButton("New");
+		newRecipe.addActionListener(new newListener());
+		panel.add(newRecipe);
 		prev = new JButton("<-Prev");
+		prev.addActionListener(new prevListener());
 		panel.add(prev);
 		next = new JButton("Next->");
+		next.addActionListener(new nextListener());
 		panel.add(next);
 		edit = new JButton("Edit");
 		edit.addActionListener(new editListener());
@@ -213,6 +212,62 @@ public class GUI {
 			titleText.setText(recipe.getTitle());
 			ingredientsText.setText(recipe.getIngredients());
 			instructionsText.setText(recipe.getInstructions());
+			titleText.setEditable(true);
+			ingredientsText.setEditable(true);
+			instructionsText.setEditable(true);
+		}
+	}
+	private class prevListener implements ActionListener {
+		public void actionPerformed(ActionEvent e){
+			//loads previous recipe in list
+			title = titleText.getText();
+			FindRecipes findRecipes=new FindRecipes();
+			ListIterator<String> iterator = titlesArray.listIterator();
+			while(iterator.hasNext()){
+				if(iterator.next().equalsIgnoreCase(title)){
+					title=iterator.previous();
+					if(iterator.hasPrevious()){
+						title=iterator.previous();
+						System.out.println("previous title is: " + title);
+					}
+					break;
+				}
+			}
+			try {
+				recipe=findRecipes.getRecipeByTitle(title);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			titleText.setText(recipe.getTitle());
+			ingredientsText.setText(recipe.getIngredients());
+			instructionsText.setText(recipe.getInstructions());
+		}
+	}
+	private class nextListener implements ActionListener {
+		public void actionPerformed(ActionEvent e){
+			//loads next recipe in list
+			title = titleText.getText();
+			FindRecipes findRecipes=new FindRecipes();
+			Iterator<String> iterator=titlesArray.iterator();
+			while(iterator.hasNext()){
+				if(iterator.next().equalsIgnoreCase(title)){
+					if(iterator.hasNext()){
+					title=iterator.next();
+					System.out.println("next title is "+ title);
+					}
+					try {
+						recipe=findRecipes.getRecipeByTitle(title);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					break;
+				}
+			}
+			titleText.setText(recipe.getTitle());
+			ingredientsText.setText(recipe.getIngredients());
+			instructionsText.setText(recipe.getInstructions());
 		}
 	}
 	private class openListener implements ActionListener {
@@ -220,24 +275,42 @@ public class GUI {
 			// open recipe
 			recipe=new Recipe();//should we construct with given title instead?
 			recipe.setTitle(titleText.getText());
+			System.out.println(titleText.getText());
 			//compare title to titles (look for existing in ArrayList)
-			for(String t: titlesArray){
-				if(t==recipe.getTitle()){
+			FindRecipes findRecipes=new FindRecipes();
+			boolean foundRecipe=false;
+			try {
+				titlesArray=findRecipes.listAllRecipes();
+			} catch (IOException e2) {
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
+			System.out.println(titlesArray);
+			Iterator<String> iterator=titlesArray.iterator();
+			while(iterator.hasNext()){
+				if(iterator.next().equalsIgnoreCase(recipe.getTitle())){
+					System.out.println("title");
 					try {
-						recipe=findRecipe.getRecipeByTitle(title);
+						recipe=findRecipes.getRecipeByTitle(recipe.getTitle());
+						System.out.println(recipe.getTitle());
+						foundRecipe=true;
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-				}else{
-					recipe=new Recipe("File not found","","");
+					
 				}
+				
+			if(foundRecipe){
 				titleText.setText(recipe.getTitle());
 				ingredientsText.setText(recipe.getIngredients());
 				instructionsText.setText(recipe.getInstructions());
-				//titleText.setEditable(false);
+				titleText.setEditable(false);
 			    ingredientsText.setEditable(false);
 			    instructionsText.setEditable(false);
+			}else{
+				titleText.setText("File not found");
+			}
 			}
 		}
 	}
@@ -260,6 +333,23 @@ public class GUI {
 		    titleText.setEditable(false);
 		    ingredientsText.setEditable(false);
 		    instructionsText.setEditable(false);
+		    FindRecipes findRecipes=new FindRecipes();
+		    try {
+		    	
+		    titles=new String();
+		    titlesArray=findRecipes.listAllRecipes();
+		    Iterator<String> iterator = titlesArray.iterator();
+			while(iterator.hasNext()){
+					title=iterator.next();
+					titles = (titles + "\n" + title);
+				}
+		    	listTitles.setText(titles);
+		    	//makeEastRegion();//does not work to refresh list!!!!
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		    
 		    //System.out.println(recipe.getTitle());
 		   // System.out.println(recipe.getIngredients());
 		}
