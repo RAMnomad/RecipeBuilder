@@ -16,11 +16,13 @@ public class GUI {
 	private JTextField titleText;
 	private JScrollPane scroll;
 	public String title;
+	public String recipeRemove;
 	public String titles="";
 	public ArrayList <String> titlesArray=new ArrayList<String>();
 	public JButton prev, next, edit, save, send, search, newRecipe;
 	public Recipe recipe=new Recipe();
 	public FindRecipes findRecipe=new FindRecipes();
+	public boolean edited=false;
 	
 	public void buildRecipeCard() throws IOException {
 		frame = new JFrame("Recipe Card");
@@ -247,22 +249,34 @@ public class GUI {
 	private class nextListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
 			//loads next recipe in list
+		
 			title = titleText.getText();
 			FindRecipes findRecipes=new FindRecipes();
-			Iterator<String> iterator=titlesArray.iterator();
-			while(iterator.hasNext()){
-				if(iterator.next().equalsIgnoreCase(title)){
-					if(iterator.hasNext()){
-					title=iterator.next();
-					System.out.println("next title is "+ title);
-					}
-					try {
-						recipe=findRecipes.getRecipeByTitle(title);
-					} catch (IOException e1) {
+			//loads first recipe if no recipe is loaded
+			if(title.equalsIgnoreCase("Enter new recipe title here")){
+				try {
+					recipe=findRecipes.getRecipeByTitle(titlesArray.get(0));
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}else{
+				//loads next recipe
+				Iterator<String> iterator=titlesArray.iterator();
+				while(iterator.hasNext()){
+					if(iterator.next().equalsIgnoreCase(title)){
+						if(iterator.hasNext()){
+							title=iterator.next();
+							System.out.println("next title is "+ title);
+						}
+						try {
+							recipe=findRecipes.getRecipeByTitle(title);
+						} catch (IOException e1) {
 						// TODO Auto-generated catch block
-						e1.printStackTrace();
+							e1.printStackTrace();
+						}
+						break;
 					}
-					break;
 				}
 			}
 			titleText.setText(recipe.getTitle());
@@ -320,12 +334,27 @@ public class GUI {
 			titleText.setEditable(true);
 			ingredientsText.setEditable(true);
 			instructionsText.setEditable(true);
+			edited = true;
+			recipeRemove=titleText.getText();
 		}
 	}
 	private class saveListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
 			//save recipe
 			recipe=new Recipe();
+			FindRecipes findRecipes=new FindRecipes();
+			if(edited){
+				//TODO write code to remove prior version of recipe
+				try {
+					recipe=findRecipes.getRecipeByTitle(recipeRemove);
+					recipe.removeRecipe(recipe);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+			
 			recipe.setTitle(titleText.getText());
 			recipe.setIngredients(ingredientsText.getText());
 		    recipe.setInstructions(instructionsText.getText());
@@ -333,7 +362,7 @@ public class GUI {
 		    titleText.setEditable(false);
 		    ingredientsText.setEditable(false);
 		    instructionsText.setEditable(false);
-		    FindRecipes findRecipes=new FindRecipes();
+		    
 		    try {
 		    	
 		    titles=new String();
@@ -349,7 +378,7 @@ public class GUI {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		    
+		    edited=false;
 		    //System.out.println(recipe.getTitle());
 		   // System.out.println(recipe.getIngredients());
 		}
