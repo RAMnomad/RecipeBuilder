@@ -117,4 +117,8 @@ public class Recipe {
 		
 		
 		}
+	 public void removeRecipe(Recipe recipe){
+		 //TODO write code to remove recipe from file
+		
+	 }
 }

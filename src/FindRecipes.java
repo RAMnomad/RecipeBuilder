@@ -61,7 +61,7 @@ public class FindRecipes {
 				System.out.println(titles);
 			}
 			System.out.println(titles);
-			//java.util.Collections.sort(titles);//arrange titles by alphabetical order
+			java.util.Collections.sort(titles);//arrange titles by alphabetical order
 			System.out.println(titles);
 			return titles;
 		}
