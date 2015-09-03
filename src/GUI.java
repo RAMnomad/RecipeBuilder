@@ -1,11 +1,13 @@
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class GUI {
@@ -228,7 +230,6 @@ public class GUI {
 					title=iterator.previous();
 					if(iterator.hasPrevious()){
 						title=iterator.previous();
-						System.out.println("previous title is: " + title);
 					}
 					break;
 				}
@@ -254,7 +255,6 @@ public class GUI {
 				if(iterator.next().equalsIgnoreCase(title)){
 					if(iterator.hasNext()){
 					title=iterator.next();
-					System.out.println("next title is "+ title);
 					}
 					try {
 						recipe=findRecipes.getRecipeByTitle(title);
@@ -275,7 +275,6 @@ public class GUI {
 			// open recipe
 			recipe=new Recipe();//should we construct with given title instead?
 			recipe.setTitle(titleText.getText());
-			System.out.println(titleText.getText());
 			//compare title to titles (look for existing in ArrayList)
 			FindRecipes findRecipes=new FindRecipes();
 			boolean foundRecipe=false;
@@ -285,14 +284,14 @@ public class GUI {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
-			System.out.println(titlesArray);
+			//System.out.println(titlesArray);
 			Iterator<String> iterator=titlesArray.iterator();
 			while(iterator.hasNext()){
 				if(iterator.next().equalsIgnoreCase(recipe.getTitle())){
-					System.out.println("title");
+					//System.out.println("title");
 					try {
 						recipe=findRecipes.getRecipeByTitle(recipe.getTitle());
-						System.out.println(recipe.getTitle());
+						//System.out.println(recipe.getTitle());
 						foundRecipe=true;
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
@@ -314,12 +313,15 @@ public class GUI {
 			}
 		}
 	}
+	public boolean currentlyEditing = false;
 	private class editListener implements ActionListener {
 		public void actionPerformed(ActionEvent e){
 			// make fields editable
 			titleText.setEditable(true);
 			ingredientsText.setEditable(true);
 			instructionsText.setEditable(true);
+			currentlyEditing = true;
+		
 		}
 	}
 	private class saveListener implements ActionListener {
@@ -329,7 +331,13 @@ public class GUI {
 			recipe.setTitle(titleText.getText());
 			recipe.setIngredients(ingredientsText.getText());
 		    recipe.setInstructions(instructionsText.getText());
-		    recipe.writeRecipeFile(recipe);
+		    if(currentlyEditing){
+		    	FindRecipes.array.remove(FindRecipes.indexOfEditableRecipe);
+		    	System.out.println(FindRecipes.array);
+		    	currentlyEditing = false;
+		    	recipe.writeRecipeFile(FindRecipes.array);
+		    }
+		    recipe.writeRecipeFile(recipe);		    
 		    titleText.setEditable(false);
 		    ingredientsText.setEditable(false);
 		    instructionsText.setEditable(false);
@@ -349,10 +357,7 @@ public class GUI {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		    
-		    //System.out.println(recipe.getTitle());
-		   // System.out.println(recipe.getIngredients());
-		}
+		  }
 		   
 	}
 	private class listListener implements ActionListener {

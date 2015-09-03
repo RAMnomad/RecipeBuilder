@@ -98,15 +98,52 @@ public class Recipe {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			array.add(addRecipe);
+			
+			array.add(addRecipe);//add Recipe to the array
+			
+			
 			try {
-				recipeFile.setWritable(true);		
-				filewriter=new FileWriter(recipeFile,false);
-	            filewriter.write(array.toJSONString());
+				recipeFile.setWritable(true);	//setting up recipe file to write	
+				filewriter=new FileWriter(recipeFile,false); //declaring the filewriter
+	            filewriter.write(array.toJSONString()); //write the whole array to file after we convert it to a JSON string
 	            
 				
 	            System.out.println("Successfully Copied JSON Object to File...");
 	            System.out.println("\nJSON Object: " + addRecipe);
+	            filewriter.flush();
+	            filewriter.close();
+	 
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+			
+		
+		
+		}
+
+		public void writeRecipeFile(JSONArray recipearray){
+			System.out.println(recipearray);
+			File recipeFile=null;
+			FileWriter filewriter = null;
+			try {
+				recipeFile = new File("C://temp/recipes.json");
+				if (!recipeFile.exists()){
+					boolean fileCreated = recipeFile.createNewFile();
+					if (fileCreated){
+						System.out.println("Created new recipe file.");//change to pop up alert?
+					}
+				
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			try {
+				recipeFile.setWritable(true);	//setting up recipe file to write	
+				filewriter=new FileWriter(recipeFile,false); //declaring the filewriter
+				
+	            filewriter.write(recipearray.toJSONString()); //write the whole array to file after we convert it to a JSON string
 	            filewriter.flush();
 	            filewriter.close();
 	 

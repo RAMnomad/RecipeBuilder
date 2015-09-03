@@ -19,7 +19,7 @@ public class FindRecipes {
 	//Find Recipe by title
 	
 	public ArrayList<String> titles;
-	public JSONArray array;
+	public static JSONArray array;
 	public File recipeFile;
 	public JSONObject recipeObj;
 	
@@ -61,7 +61,7 @@ public class FindRecipes {
 				System.out.println(titles);
 			}
 			System.out.println(titles);
-			//java.util.Collections.sort(titles);//arrange titles by alphabetical order
+			java.util.Collections.sort(titles);//arrange titles by alphabetical order
 			System.out.println(titles);
 			return titles;
 		}
@@ -116,7 +116,7 @@ public class FindRecipes {
 	//}
 	
 	
-		
+	public static int indexOfEditableRecipe=-1;	
 	
 	
 	public Recipe getRecipeByTitle(String title) throws IOException{
@@ -134,8 +134,8 @@ public class FindRecipes {
 					//recipe.setIngredients(ingredient);
 				//}
 			//}
-			for(int index=0; index<array.size(); index++){
-				recipeObj = (JSONObject) array.get(index);
+			for(indexOfEditableRecipe=0; indexOfEditableRecipe<array.size(); indexOfEditableRecipe++){
+				recipeObj = (JSONObject) array.get(indexOfEditableRecipe);
 				if(title.equalsIgnoreCase((String)recipeObj.get("Title"))){
 					recipe.setTitle(title);
 					System.out.println("found in json array");
